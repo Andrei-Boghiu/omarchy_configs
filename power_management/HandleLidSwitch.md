@@ -8,13 +8,13 @@ This prevents the laptop from suspending, hibernating, or shutting down when the
 
 Open the configuration file:
 
-```bash id="01pdwl"
+```bash
 sudo nvim /etc/systemd/logind.conf
 ```
 
 Find or add the following lines:
 
-```ini id="zh8yl7"
+```ini
 HandleLidSwitch=ignore
 HandleLidSwitchExternalPower=ignore
 HandleLidSwitchDocked=ignore
@@ -26,6 +26,6 @@ HandleLidSwitchDocked=ignore
 
 Apply changes:
 
-```bash id="98f1n6"
+```bash
 sudo systemctl restart systemd-logind
 ```
