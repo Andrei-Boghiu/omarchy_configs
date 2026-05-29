@@ -6,11 +6,11 @@
 
   tasks:
     - name: Update package database
-      community.general.pacman:
+      ansible.builtin.pacman:
         update_cache: true
 
     - name: Install general-purpose packages
-      community.general.pacman:
+      ansible.builtin.pacman:
         name:
           # Version Control
           - git
@@ -34,7 +34,7 @@
           - neovim
         state: present
 
-    - name: Enable {{ item.description }}
+    - name: Enable services
       ansible.builtin.systemd:
         name: "{{ item.service }}"
         enabled: true
@@ -51,6 +51,8 @@
 
         - service: nginx
           description: "Nginx Web Server"
+      loop_control:
+        label: "{{ item.description }}"
 
     - name: Display post-provisioning reminders
       ansible.builtin.debug:

@@ -4,8 +4,12 @@
   become: true
 
   tasks:
+    - name: Update package database
+      ansible.builtin.pacman:
+        update_cache: true
+
     - name: Install control node packages
-      community.general.pacman:
+      ansible.builtin.pacman:
         name:
           - prometheus
           - grafana
@@ -25,7 +29,7 @@
         - prometheus-node-exporter
         - nginx
 
-    - name: Allow {{ item.description }}
+    - name: Allow ports
       community.general.ufw:
         rule: allow
         port: "{{ item.port }}"
