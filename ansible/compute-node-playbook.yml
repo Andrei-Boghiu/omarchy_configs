@@ -1,0 +1,68 @@
+---
+- name: Provision Omarchy Compute Node
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Update package database
+      community.general.pacman:
+        update_cache: true
+
+    - name: Install compute node packages
+      community.general.pacman:
+        name:
+          # Monitoring
+          - prometheus-node-exporter
+        state: present
+
+    - name: Install AUR packages
+      kewlfft.aur.aur:
+        name: "{{ item }}"
+        state: present
+      become: true
+      become_user: "{{ ansible_user_id }}"
+      loop:
+        # AI Inference
+        - lm-studio-bin
+
+        # GPU Monitoring
+        - prometheus-nvidia-gpu-exporter-git
+
+    - name: Enable {{ item.description }}
+      ansible.builtin.systemd:
+        name: "{{ item.service }}"
+        enabled: true
+        state: started
+      loop:
+        - service: prometheus-node-exporter
+          description: "Prometheus Node Exporter"
+
+        - service: prometheus-nvidia-gpu-exporter
+          description: "NVIDIA GPU Exporter"
+
+    - name: Allow {{ item.description }}
+      community.general.ufw:
+        rule: allow
+        port: "{{ item.port }}"
+        proto: tcp
+      loop:
+        - port: "9100"
+          description: "Prometheus Node Exporter"
+
+        - port: "9445"
+          description: "NVIDIA GPU Exporter"
+
+        - port: "6969"
+          description: "LM Studio API Server"
+      ignore_errors: true
+
+    - name: Display completion message
+      ansible.builtin.debug:
+        msg:
+          - "Compute node provisioning completed."
+          - "Verify services with:"
+          - "systemctl status prometheus-node-exporter"
+          - "systemctl status prometheus-nvidia-gpu-exporter"
+          - "Verify LM Studio is installed with: lms version"
+          - "Run 'tailscale status' to verify Tailnet connectivity."

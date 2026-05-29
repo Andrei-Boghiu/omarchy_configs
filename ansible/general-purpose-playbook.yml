@@ -1,0 +1,59 @@
+---
+- name: General Purpose Omarchy Provisioning
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Update package database
+      community.general.pacman:
+        update_cache: true
+
+    - name: Install general-purpose packages
+      community.general.pacman:
+        name:
+          # Version Control
+          - git
+
+          # Remote Access
+          - openssh
+
+          # Networking
+          - tailscale
+          - nginx
+          - nmap
+
+          # Containers
+          - docker
+
+          # Development
+          - nodejs
+          - python
+
+          # Editor
+          - neovim
+        state: present
+
+    - name: Enable {{ item.description }}
+      ansible.builtin.systemd:
+        name: "{{ item.service }}"
+        enabled: true
+        state: started
+      loop:
+        - service: sshd
+          description: "SSH Server"
+
+        - service: tailscaled
+          description: "Tailscale VPN"
+
+        - service: docker
+          description: "Docker Engine"
+
+        - service: nginx
+          description: "Nginx Web Server"
+
+    - name: Display post-provisioning reminders
+      ansible.builtin.debug:
+        msg:
+          - "General provisioning completed."
+          - "Run 'sudo tailscale up' to authenticate this machine."

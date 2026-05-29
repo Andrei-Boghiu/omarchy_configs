@@ -1,0 +1,44 @@
+---
+- name: Provision Omarchy Control Node
+  hosts: localhost
+  become: true
+
+  tasks:
+    - name: Install control node packages
+      community.general.pacman:
+        name:
+          - prometheus
+          - grafana
+          - prometheus-node-exporter
+          - nginx
+        state: present
+        update_cache: true
+
+    - name: Enable services
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        enabled: true
+        state: started
+      loop:
+        - prometheus
+        - grafana
+        - prometheus-node-exporter
+        - nginx
+
+    - name: Allow {{ item.description }}
+      community.general.ufw:
+        rule: allow
+        port: "{{ item.port }}"
+      loop:
+        - port: "9090"
+          description: "Prometheus Web UI and API"
+
+        - port: "3000"
+          description: "Grafana Dashboard"
+
+        - port: "80"
+          description: "Nginx HTTP"
+
+        - port: "443"
+          description: "Nginx HTTPS"
+      ignore_errors: true
