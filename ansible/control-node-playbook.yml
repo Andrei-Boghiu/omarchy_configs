@@ -8,13 +8,15 @@
       ansible.builtin.pacman:
         update_cache: true
 
-    - name: Install control node packages
+    - name: Install packages
       ansible.builtin.pacman:
         name:
           - prometheus
           - grafana
           - prometheus-node-exporter
           - nginx
+          - terraform
+          - wget
         state: present
         update_cache: true
 
