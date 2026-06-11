@@ -10,7 +10,7 @@ sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.ta
 
 Verify:
 
-```bash id="1d67za"
+```bash
 systemctl status sleep.target suspend.target hibernate.target hybrid-sleep.target
 ```
 
@@ -24,7 +24,7 @@ All should appear masked or inactive.
 
 ## Re-enable Sleep Later
 
-```bash id="7h0n2v"
+```bash
 sudo systemctl unmask sleep.target suspend.target hibernate.target hybrid-sleep.target
 ```
 
