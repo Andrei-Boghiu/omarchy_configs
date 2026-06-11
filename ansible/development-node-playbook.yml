@@ -1,0 +1,43 @@
+---
+- name: Development Node Omarchy Provisioning
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Update package database
+      ansible.builtin.pacman:
+        update_cache: true
+
+    - name: Install packages
+      ansible.builtin.pacman:
+        name:
+          - git
+          - openssh
+          - tailscale
+          - nginx
+          - nmap
+          - docker
+          - terraform
+          - nodejs
+          - python
+          - neovim
+          - brave-bin
+          - chromium
+          - spotify
+        state: present
+
+    - name: Enable services
+      ansible.builtin.systemd:
+        name: "{{ item.service }}"
+        enabled: true
+        state: started
+      loop:
+        - service: sshd
+          description: "SSH Server"
+
+        - service: docker
+          description: "Docker Engine"
+
+      loop_control:
+        label: "{{ item.description }}"
