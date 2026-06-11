@@ -9,29 +9,19 @@
       ansible.builtin.pacman:
         update_cache: true
 
-    - name: Install general-purpose packages
+    - name: Install packages
       ansible.builtin.pacman:
         name:
-          # Version Control
           - git
-
-          # Remote Access
           - openssh
-
-          # Networking
           - tailscale
           - nginx
           - nmap
-
-          # Containers
           - docker
-
-          # Development
           - nodejs
           - python
-
-          # Editor
           - neovim
+          - wget
         state: present
 
     - name: Enable services
